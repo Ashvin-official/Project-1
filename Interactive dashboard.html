@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Generative AI in Education – Student Survey Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f3f4fb;--card:rgba(255,255,255,.85);--tx:#1b2033;--mut:#5f6880;--line:#e2e6f2;--ac:#6366f1;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1020;--card:rgba(26,30,52,.85);--tx:#eaedf8;--mut:#9ba4c0;--line:#2b3155}}
+:root[data-theme="dark"]{--bg:#0d1020;--card:rgba(26,30,52,.85);--tx:#eaedf8;--mut:#9ba4c0;--line:#2b3155}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;color:var(--tx);font:14px/1.5 'Plus Jakarta Sans',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:radial-gradient(800px 420px at 8% -8%,rgba(99,102,241,.22),transparent),radial-gradient(700px 420px at 100% 0,rgba(236,72,153,.16),transparent),radial-gradient(700px 500px at 50% 110%,rgba(14,165,233,.14),transparent),var(--bg);background-attachment:fixed}
+.wrap{max-width:1320px;margin:0 auto;padding:18px}
+header{position:relative;overflow:hidden;color:#fff;border-radius:22px;padding:26px 28px;margin-bottom:16px;background:linear-gradient(120deg,#312e81,#6366f1,#a855f7,#ec4899);background-size:220% 220%;animation:flow 14s ease infinite;box-shadow:0 12px 34px rgba(99,102,241,.35)}
+header:after{content:"";position:absolute;right:-60px;top:-80px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.12)}
+@keyframes flow{50%{background-position:100% 50%}}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;position:relative;z-index:1}
+h1{margin:0;font-size:27px;font-weight:800;letter-spacing:-.5px}
+header p{margin:5px 0 16px;opacity:.88;font-size:13px}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:1}
+.fg{display:flex;flex-direction:column;gap:4px;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+select,button,input{font:inherit;font-size:13px}
+select{padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.16);color:#fff;backdrop-filter:blur(8px);text-transform:none;cursor:pointer}
+select option{color:#111;background:#fff}
+.btn{cursor:pointer;border:0;padding:9px 15px;border-radius:12px;background:#fff;color:#4338ca;font-weight:700;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:rgba(255,255,255,.18);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;min-height:32px;font-size:12px;color:var(--mut)}
+.chip{cursor:pointer;border:0;padding:6px 12px;border-radius:99px;background:var(--ac);color:#fff;font-weight:600;font-size:12px;animation:pop .25s}
+@keyframes pop{from{transform:scale(.8);opacity:0}}
+.insight{border-radius:16px;padding:14px 18px;margin-bottom:16px;background:linear-gradient(90deg,rgba(99,102,241,.14),rgba(236,72,153,.12));border:1px solid var(--line);font-size:13.5px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+.card{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:18px 20px;box-shadow:0 4px 18px rgba(30,40,90,.07);transition:transform .2s,box-shadow .2s;animation:up .6s both}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(99,102,241,.2)}
+@keyframes up{from{opacity:0;transform:translateY(16px)}}
+.kpi{display:flex;gap:14px;align-items:center;position:relative;overflow:hidden}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+.ico{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:22px;background:color-mix(in srgb,var(--c) 18%,transparent)}
+.kl{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);font-weight:600}
+.kv{font-size:30px;font-weight:800;line-height:1.2;color:var(--c)}.kv.sm{font-size:16px;padding:6px 0}
+.ks{font-size:12px;color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,390px),1fr));gap:14px;margin-bottom:16px}
+h3{margin:0 0 2px;font-size:15px;font-weight:700}.sub{font-size:12px;color:var(--mut);margin-bottom:10px}
+.cv{position:relative;height:275px}
+.thead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+#q{padding:9px 14px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--tx);min-width:220px}
+.tw{overflow:auto;max-height:430px;border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{position:sticky;top:0;background:var(--bg);text-align:left;padding:10px 12px;border-bottom:2px solid var(--ac);color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--ac)}
+td{padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:hover td{background:rgba(99,102,241,.1)}
+.empty{padding:26px;text-align:center;color:var(--mut)}
+footer{font-size:12px;color:var(--mut);padding:6px 4px 18px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{.filters,.btn{display:none}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="top"><div><h1>Generative AI in Education</h1><p>Student survey · 40 responses · click any bar or slice to cross-filter everything</p></div><button class="btn ghost" id="theme">◐ Theme</button></div>
+<div class="filters" id="filters"></div>
+</header>
+<div class="chips" id="chips"></div>
+<div class="insight" id="insight"></div>
+<section class="kpis" id="kpis"></section>
+<section class="grid">
+<div class="card"><h3>How often students use AI</h3><div class="sub">Usage frequency</div><div class="cv"><canvas id="c1"></canvas></div></div>
+<div class="card"><h3>Which AI tools are used</h3><div class="sub">Respondents using each tool (multiple choice)</div><div class="cv"><canvas id="c2"></canvas></div></div>
+<div class="card"><h3>Biggest concern about AI</h3><div class="sub">Single choice</div><div class="cv"><canvas id="c3"></canvas></div></div>
+<div class="card"><h3>Should colleges allow AI?</h3><div class="sub">Share of respondents</div><div class="cv"><canvas id="c4"></canvas></div></div>
+<div class="card"><h3>Change in academic performance since using AI</h3><div class="sub">Self-reported</div><div class="cv"><canvas id="c5"></canvas></div></div>
+<div class="card"><h3>How often AI answers are verified</h3><div class="sub">Self-reported verification habit</div><div class="cv"><canvas id="c6"></canvas></div></div>
+</section>
+<section class="card">
+<div class="thead"><div><h3>Respondent-level data</h3><div class="sub" id="tcount"></div></div><input id="q" type="search" placeholder="🔍 Search the table…"></div>
+<div class="tw"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div>
+</section>
+<footer>Source: student survey on Generative AI in education (n = 40). Small, non-random sample (70% aged 18–20, mostly 1st–2nd year), so results are indicative, not statistically generalisable. Percentages are shares of the currently filtered respondents. Free-text opinions and “main reasons for using AI” are not charted.</footer>
+</div>
+<script>
+const RAW=`0 M 1 Sc Go CGLN D 1 S V I I C L D 1
+0 M 1 En Pr CG C 0 S A I C G L P 1
+0 M 1 Sc Ga - R 0 R N I N G L P 1
+0 M 1 En Pr CGL D 2 F A N C C L P 0
+0 M 1 En Go CGL W 0 A A I I C I D 2
+0 F 1 En Pr CG D 0 S V N O C I D 1
+0 F 1 Sc Go CG C 0 S N U X U E P 2
+0 M 1 En Pr C C 1 A N I O C L P 1
+0 M 1 Sc Go CGP C 1 S V N I U X U 2
+0 M 1 En Pr CLH D 2 S A I D G E P 1
+0 M 1 En Pr CGLP C 0 R A N C C S N 0
+0 M 1 Sc Ga C D 0 F V I O C Q D 0
+0 M 1 Sc Go CG W 0 F V D I G E U 2
+0 F 1 Sc Go C O 2 S N U N N S U 2
+0 F 1 Ar Ga CG W 0 F A I O G E D 0
+0 F 1 Ar Ga CGO D 0 S V I O G E D 1
+0 M 1 Sc Go CG D 0 F A I O G L D 0
+0 F 1 Ar Ga CG W 0 S V I C C E P 0
+0 M 2 Sc Ga CG W 0 A A D I F Q D 0
+0 M 2 Sc Ga CGP W 0 A A I C G E U 4
+0 F 2 Sc Ga G D 0 A A I I G L P 0
+0 F 2 Sc Pr CGLP D 1 S A S V G S D 2
+0 F 2 Mg Pr CG O 1 R V I P G S D 1
+0 F 2 Ot Pr CG O 0 A A I I G L P 1
+0 M 2 Sc Ga CG C 0 A V I P G X U 2
+0 M 2 En Pr CGML W 2 S V I P G L P 0
+0 F 2 Sc Ga CGM W 2 S V D C G E D 3
+0 F 3 Sc Ga C W 0 A E S X U Q P 4
+1 M 3 Sc Go CG D 0 S A I V C L P 2
+1 F 3 En Go CGLP D 1 A A N O G E D 2
+1 F 3 Me Pr CG D 0 S V D C U S U 1
+1 F 3 Sc Go CG D 1 A V D V G E P 2
+1 M 3 Ot Ga GN K 0 F A N C G L U 3
+1 M 3 So Ot CGLNO W 2 R V S X G E D 1
+1 M 3 Sc Ga C W 1 R A I N G R D 2
+1 F 3 So Ot CGLPN D 1 S E I I G L P 1
+1 F P Ot Pr C D 1 F A S V F L D 0
+2 F P So Ga CGP D 1 S E S C G L D 1
+2 F P En Ot C D 1 A V I C F L P 0
+2 M P En Ga H O 1 S V I O G I P 1`;
+const K=['age','g','y','f','i','t','fr','h','v','p','c','k','al','b','fu','s'];
+const D=RAW.trim().split('\n').map((l,n)=>{const a=l.trim().split(/\s+/),o={id:n+1};K.forEach((k,j)=>o[k]=a[j]);return o});
+const M={
+age:{0:'18–20',1:'21–23',2:'24–26'},g:{M:'Male',F:'Female'},y:{1:'1st Year',2:'2nd Year',3:'3rd Year',P:'Postgraduate'},
+f:{Sc:'Science',En:'Engineering/Technology',Ar:'Arts & Humanities',Mg:'Management',Me:'Medicine/Healthcare',So:'Social Sciences',Ot:'Other'},
+i:{Go:'Government',Ga:'Government-aided',Pr:'Private',Ot:'Other'},
+fr:{D:'Several times a day',O:'Once a day',W:'Several times a week',K:'Once a week',C:'Occasionally',R:'Rarely'},
+h:{0:'< 1 hr',1:'1–3 hrs',2:'3–5 hrs'},
+v:{A:'Always',F:'Often',S:'Sometimes',R:'Rarely'},
+c:{S:'Significant improvement',I:'Some improvement',N:'No significant change',D:'Some decline',U:'Not sure'},
+k:{I:'Incorrect information',C:'Reduced critical thinking',O:'Lack of originality',D:'Academic dishonesty',P:'Privacy concerns',V:'Overdependence on AI',N:'No major concerns',X:'Other'},
+al:{G:'Yes, with clear guidelines',F:'Yes, without major restrictions',C:'Only for certain activities',U:'Not sure',N:'No'},
+fu:{D:'Definitely yes',P:'Probably yes',U:'Not sure',N:'Probably no'}};
+const T={C:'ChatGPT',G:'Google Gemini',L:'Claude',N:'NotebookLM',P:'Perplexity',M:'Microsoft Copilot',H:'GitHub Copilot',O:'Other'};
+const PAL=['#4f46e5','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6','#64748b','#ec4899'];
+const FIL=[['age','Age group'],['g','Gender'],['y','Year of study'],['f','Field of study'],['i','Institution type']];
+const NAME={fr:'Frequency',t:'Tool',k:'Concern',al:'Colleges',c:'Performance',v:'Verification'};
+const ACC={c1:'#6366f1',c2:'#0ea5e9',c3:'#f59e0b',c5:'#10b981',c6:'#ec4899'};
+const KP=[['Respondents','👥','#6366f1'],['Use AI daily or more','⚡','#0ea5e9'],['Verify often / always','✅','#10b981'],['See AI as essential','🎓','#a855f7'],['Explicitly back AI use','👍','#f59e0b'],['Top concern','⚠️','#ef4444']];
+const SEL={},CF={};let data=D,ch={},sort={k:'id',d:1},q='';
+const $=id=>document.getElementById(id);
+const pct=(n,N)=>N?Math.round(n/N*100)+'%':'–';
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const L=(k,c)=>k==='t'?T[c]:M[k][c];
+const base=()=>D.filter(r=>FIL.every(([k])=>!SEL[k]||r[k]===SEL[k]));
+const ok=(r,x)=>Object.entries(x).every(([k,v])=>k==='t'?r.t.includes(v):r[k]===v);
+const sub=ex=>{const c={...CF};delete c[ex];return base().filter(r=>ok(r,c))};
+const cnt=(k,d)=>{const o={};d.forEach(r=>o[r[k]]=(o[r[k]]||0)+1);return o};
+function buildUI(){
+ $('filters').innerHTML=FIL.map(([k,l])=>`<label class="fg">${l}<select data-k="${k}"><option value="">All</option>${Object.keys(M[k]).filter(c=>D.some(r=>r[k]===c)).map(c=>`<option value="${c}">${M[k][c]}</option>`).join('')}</select></label>`).join('')+'<button class="btn" id="reset">Reset all</button>';
+ document.querySelectorAll('#filters select').forEach(s=>s.onchange=()=>{SEL[s.dataset.k]=s.value;render()});
+ $('reset').onclick=()=>{document.querySelectorAll('#filters select').forEach(s=>{s.value='';SEL[s.dataset.k]=''});for(const k in CF)delete CF[k];$('q').value='';q='';render()};
+ $('kpis').innerHTML=KP.map(([l,i,c],n)=>`<div class="card kpi" style="--c:${c};animation-delay:${n*70}ms"><div class="ico">${i}</div><div><div class="kl">${l}</div><div class="kv${n==5?' sm':''}" id="kv${n}"></div><div class="ks" id="ks${n}"></div></div></div>`).join('');
+ $('theme').onclick=()=>{const r=document.documentElement,cur=r.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');r.dataset.theme=cur==='dark'?'light':'dark';render()};
+ $('q').oninput=e=>{q=e.target.value.toLowerCase();table()};
+}
+function tween(el,to,suf){const from=el._v||0;el._v=to;const t0=performance.now();(function s(t){const p=Math.min(1,(t-t0)/450),e=1-Math.pow(1-p,3);el.textContent=Math.round(from+(to-from)*e)+suf;if(p<1)requestAnimationFrame(s)})(t0)}
+function setK(n,v,suf,s){const el=$('kv'+n);if(v===null){el._v=0;el.textContent='–'}else tween(el,v,suf);$('ks'+n).textContent=s}
+function kpis(){
+ const N=data.length,n=f=>data.filter(f).length,p=x=>N?Math.round(x/N*100):null;
+ const d1=n(r=>'DO'.includes(r.fr)),v1=n(r=>'AF'.includes(r.v)),e1=n(r=>'DP'.includes(r.fu)),a1=n(r=>'GF'.includes(r.al));
+ setK(0,N,'',`of ${D.length} in total`);
+ setK(1,p(d1),'%',`${d1} respondents`);setK(2,p(v1),'%',`${v1} respondents`);
+ setK(3,p(e1),'%','definitely or probably yes');setK(4,p(a1),'%','yes, with or without guidelines');
+ const kc=cnt('k',data);delete kc.N;delete kc.X;const top=Object.entries(kc).sort((a,b)=>b[1]-a[1])[0];
+ $('kv5').textContent=top?M.k[top[0]]:'–';$('ks5').textContent=top?`${top[1]} respondents (${pct(top[1],N)})`:'no data';
+}
+function insight(){
+ const N=data.length;if(!N){$('insight').innerHTML='💡 No respondents match the current filters.';return}
+ const tc={};data.forEach(r=>{if(r.t!=='-')[...r.t].forEach(x=>tc[x]=(tc[x]||0)+1)});
+ const tt=Object.entries(tc).sort((a,b)=>b[1]-a[1])[0];
+ const hi=data.filter(r=>'AF'.includes(r.v)),lo=data.filter(r=>'SR'.includes(r.v)),g=a=>a.filter(r=>'EA'.includes(r.p)).length;
+ let s='💡 '+(tt?`Most-used tool: <b>${T[tt[0]]}</b> (${pct(tt[1],N)} of respondents). `:'');
+ if(hi.length&&lo.length)s+=`Above-average or excellent performance: <b>${pct(g(hi),hi.length)}</b> among frequent verifiers (n=${hi.length}) vs <b>${pct(g(lo),lo.length)}</b> among occasional verifiers (n=${lo.length}). Small samples, so read with care.`;
+ $('insight').innerHTML=s;
+}
+function chips(){
+ const e=Object.entries(CF);
+ $('chips').innerHTML=e.length?e.map(([k,v])=>`<button class="chip" data-k="${k}">${NAME[k]}: ${L(k,v)} ✕</button>`).join(''):'Tip: click any bar or slice to filter the whole dashboard, and click it again to undo.';
+ document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{delete CF[b.dataset.k];render()});
+}
+function draw(id,key,codes,vals,N,dn){
+ if(ch[id])ch[id].destroy();
+ const tx=css('--mut'),gl=css('--line'),sel=CF[key];
+ const bg=codes.map((c,i)=>{const b=dn?PAL[i%PAL.length]:ACC[id];return sel&&sel!==c?b+'44':b});
+ const o={responsive:true,maintainAspectRatio:false,animation:{duration:600},
+  onClick:(e,el)=>{if(el.length){const c=codes[el[0].index];CF[key]===c?delete CF[key]:CF[key]=c;render()}},
+  onHover:(e,el)=>{e.native.target.style.cursor=el.length?'pointer':'default'}};
+ const tip={callbacks:{label:c=>` ${c.raw} respondent${c.raw==1?'':'s'} (${pct(c.raw,N)})`,afterLabel:()=>' Click to filter'}};
+ const labels=codes.map(c=>L(key,c));
+ ch[id]=new Chart($(id).getContext('2d'),dn?
+  {type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:bg,borderColor:css('--bg'),borderWidth:2,hoverOffset:8}]},options:{...o,cutout:'58%',plugins:{legend:{position:'bottom',labels:{color:tx,boxWidth:12,font:{size:11}}},tooltip:tip}}}:
+  {type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:bg,borderRadius:8,maxBarThickness:26}]},options:{...o,indexAxis:'y',plugins:{legend:{display:false},tooltip:tip},scales:{x:{beginAtZero:true,ticks:{precision:0,color:tx},grid:{color:gl}},y:{ticks:{color:tx,font:{size:11}},grid:{display:false}}}}});
+}
+function charts(){
+ const O=(id,key,order,dn)=>{const d=sub(key),c=cnt(key,d),o=order.filter(x=>!dn||c[x]||CF[key]===x);draw(id,key,o,o.map(x=>c[x]||0),d.length,dn)};
+ O('c1','fr',[...'DOWKCR']);
+ let d=sub('t'),c={};d.forEach(r=>{if(r.t!=='-')[...r.t].forEach(x=>c[x]=(c[x]||0)+1)});
+ let o=Object.keys(T).filter(x=>c[x]||CF.t===x).sort((a,b)=>(c[b]||0)-(c[a]||0));
+ draw('c2','t',o,o.map(x=>c[x]||0),d.length);
+ d=sub('k');c=cnt('k',d);o=Object.keys(M.k).filter(x=>c[x]||CF.k===x).sort((a,b)=>(c[b]||0)-(c[a]||0));
+ draw('c3','k',o,o.map(x=>c[x]||0),d.length);
+ O('c4','al',[...'GFCUN'],true);O('c5','c',[...'SINDU']);O('c6','v',[...'AFSR']);
+}
+function table(){
+ const cols=[['id','#'],['age','Age'],['g','Gender'],['y','Year'],['f','Field'],['i','Institution'],['fr','AI frequency'],['h','AI hrs / week'],['k','Main concern'],['al','Colleges should allow?'],['fu','AI essential?']];
+ const cell=(r,k)=>k==='id'?r.id:M[k][r[k]];
+ const sv=(r,k)=>k==='id'?r.id:k==='h'?+r.h:k==='fr'?'DOWKCR'.indexOf(r.fr):k==='y'?'123P'.indexOf(r.y):M[k][r[k]];
+ const rows=data.filter(r=>!q||cols.map(([k])=>cell(r,k)).join(' ').toLowerCase().includes(q)).sort((a,b)=>{const x=sv(a,sort.k),y=sv(b,sort.k);return (x>y?1:x<y?-1:0)*sort.d||a.id-b.id});
+ $('th').innerHTML='<tr>'+cols.map(([k,l])=>`<th data-k="${k}">${l}${sort.k===k?(sort.d>0?' ▲':' ▼'):''}</th>`).join('')+'</tr>';
+ document.querySelectorAll('#th th').forEach(t=>t.onclick=()=>{sort={k:t.dataset.k,d:sort.k===t.dataset.k?-sort.d:1};table()});
+ $('tb').innerHTML=rows.length?rows.map(r=>'<tr>'+cols.map(([k])=>`<td>${cell(r,k)}</td>`).join('')+'</tr>').join(''):`<tr><td class="empty" colspan="${cols.length}">No respondents match these filters.</td></tr>`;
+ $('tcount').textContent=`Showing ${rows.length} of ${D.length} respondents · click a header to sort`;
+}
+function render(){data=base().filter(r=>ok(r,CF));kpis();insight();chips();charts();table()}
+buildUI();render();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',render);
+</script>
+</body>
+</html>
